@@ -2,19 +2,23 @@ package com.example.musicplayer;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Application;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.AudioAttributes;
-import android.media.AudioRecord;
-import android.media.MediaPlayer;
-import android.media.MediaScannerConnection;
-import android.media.browse.MediaBrowser;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.storage.StorageManager;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.util.Size;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -25,24 +29,31 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.common.util.Util;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.exoplayer.SimpleExoPlayer;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicplayer.databinding.ActivityMainBinding;
-import com.google.common.collect.ImmutableList;
+import com.google.android.material.carousel.CarouselLayoutManager;
+import com.google.android.material.carousel.CarouselSnapHelper;
+import com.google.android.material.carousel.FullScreenCarouselStrategy;
+import com.google.android.material.carousel.HeroCarouselStrategy;
+import com.google.android.material.carousel.MultiBrowseCarouselStrategy;
+import com.google.android.material.carousel.UncontainedCarouselStrategy;
 
 import java.io.IOException;
-import java.security.Permission;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 ActivityMainBinding binding;
 private final int RequestPermissionCode = 1;
 private ArrayList<Audio> audiosList;
-
+private ExoPlayer player;
     @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,26 +71,66 @@ private ArrayList<Audio> audiosList;
             Toast.makeText(this, "Sem permissão para acessar armazenamento", Toast.LENGTH_SHORT).show();
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},RequestPermissionCode);
         }
+        audiosList = new ArrayList<>();
         audiosList = getAudios();
+
+        Toast.makeText(this, "Músicas encontradas: "+audiosList.size(), Toast.LENGTH_SHORT).show();
         List<MediaItem> list = new ArrayList<>();
         for (Audio a : audiosList){
             list.add(MediaItem.fromUri(Uri.parse(a.getData())));
         }
 
-        ExoPlayer player = new ExoPlayer.Builder(this).build();
-        binding.player.setPlayer(player);
+        player = new ExoPlayer.Builder(this).build();
 
         player.setMediaItems(list,true);
-        player.play();
 
+        /*binding.PlayButton.setOnClickListener(click-> {
+
+
+            boolean shouldShowPlayButton = Util.shouldShowPlayButton(player);
+
+            if (shouldShowPlayButton){
+                Util.handlePlayButtonAction(player);
+            } else {
+                Util.handlePauseButtonAction(player);
+            }
+            updatePlayPause(shouldShowPlayButton);
+        });*/
+        CarouselSnapHelper carouselSnapHelper = new CarouselSnapHelper();
+        carouselSnapHelper.attachToRecyclerView(binding.Recycler);
+
+        binding.Recycler.setLayoutManager(new CarouselLayoutManager
+                (new HeroCarouselStrategy(),CarouselLayoutManager.HORIZONTAL));
+        binding.Recycler.setAdapter(
+                new RecyclerAdapter(this,
+                        audiosList));
+
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onEvents(Player player, Player.Events events) {
+                if (events.containsAny(
+                        Player.EVENT_PLAY_WHEN_READY_CHANGED,
+                        Player.EVENT_PLAYBACK_STATE_CHANGED,
+                        Player.EVENT_PLAYBACK_SUPPRESSION_REASON_CHANGED,
+                        Player.EVENT_IS_PLAYING_CHANGED)) {
+                    Toast.makeText(MainActivity.this, "Evento aconteceu", Toast.LENGTH_SHORT).show();
+                }
+                if (events.containsAny(Player.EVENT_REPEAT_MODE_CHANGED)) {
+                    Toast.makeText(MainActivity.this, "Repeat", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+    void updatePlayPause(boolean b){
+            //binding.PlayButton.setText(b? "=":">");
     }
 
-
     @SuppressLint("Range")
-    ArrayList<Audio> getAudios(){
+    ArrayList<Audio> getAudios() {
         String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
         String selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0";
         ArrayList<Audio> arrayList = new ArrayList<>();
+        Bitmap bm;
         @SuppressLint("Recycle") Cursor cursor = getApplicationContext()
                 .getContentResolver().
                 query(
@@ -89,18 +140,40 @@ private ArrayList<Audio> audiosList;
                         null,
                         sortOrder
                 );
+        int index =0;
         if (cursor!=null && cursor.getCount()>0) {
             while (cursor.moveToNext()){
-                arrayList.add(new Audio(
-                        cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                        cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
-                        cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
-                        cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
-                ));
+                    Uri albumArt = ContentUris.withAppendedId(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Albums._ID))
+                    );
+                    if (albumArt!=null){
+                        try {
+                            bm =getApplicationContext().getContentResolver().
+                                    loadThumbnail(albumArt, new Size(3000,3000),null);
+                        } catch (IOException e) {
+                            bm = null;
+                        }
+                    } else{
+                        Toast.makeText(this, "na", Toast.LENGTH_SHORT).show();
+                        bm =null;
+                    }
+
+                    arrayList.add(new Audio(
+                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
+                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
+                            cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)),
+                            bm
+                    ));
+                }
+                index++;
             }
 
         }
+        if (arrayList.isEmpty()) Toast.makeText(this, "Nada foi adicionado", Toast.LENGTH_SHORT).show();
         return (!arrayList.isEmpty()) ? arrayList: new ArrayList<>();
     }
 
@@ -120,16 +193,18 @@ private ArrayList<Audio> audiosList;
 
 class Audio{
     private String Title, Artista, Album, Data;
+    private Bitmap bitmap;
 
     public Audio() {
         super();
     }
 
-    public Audio(String title, String artista, String album, String data) {
+    public Audio(String title, String artista, String album, String data, Bitmap bitmap) {
         Title = title;
         Artista = artista;
         Album = album;
         Data = data;
+        this.bitmap = bitmap;
     }
 
     public String getTitle() {
@@ -162,5 +237,55 @@ class Audio{
 
     public void setData(String data) {
         Data = data;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+}
+
+class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.vh>{
+private ArrayList<Audio> list = new ArrayList<>();
+private Context context;
+
+    public RecyclerAdapter(Context context, ArrayList<Audio> list) {
+        this.list = list;
+        this.context = context;
+    }
+
+    public RecyclerAdapter() {
+        super();
+    }
+
+    @NonNull
+    @Override
+    public RecyclerAdapter.vh onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new vh(LayoutInflater.from(context).inflate(R.layout.list_item, null, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerAdapter.vh holder, int position) {
+        Bitmap bitmap = list.get(position).getBitmap();
+        if (bitmap!=null){
+            holder.img.setImageBitmap(bitmap);
+        } else{
+            holder.img.setImageResource(R.drawable.img);
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return list.size();
+    }
+    public static class vh extends RecyclerView.ViewHolder{
+        ImageView img;
+        public vh(@NonNull View itemView) {
+            super(itemView);
+            img = itemView.findViewById(R.id.carousel_image_view);
+        }
     }
 }
