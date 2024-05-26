@@ -15,7 +15,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.media3.common.util.UnstableApi;
 
 import com.example.musicplayer.Adapters.VP2MainAdapter;
+import com.example.musicplayer.Fragments.FavoritesFragment;
 import com.example.musicplayer.Fragments.MusicsListFragment;
+import com.example.musicplayer.Fragments.PlaylistsFragment;
 import com.example.musicplayer.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
@@ -44,8 +46,8 @@ private final int RequestPermissionCode = 1;
                 new VP2MainAdapter(this,
                         new ArrayList<>(Arrays.asList(
                                 new MusicsListFragment(),
-                                new MusicsListFragment(),
-                                new MusicsListFragment()))));
+                                new PlaylistsFragment(),
+                                new FavoritesFragment()))));
 
         binding.BottomNavView.setOnItemSelectedListener(menuItem -> {
             switch (menuItem.getTitle().charAt(0)){
