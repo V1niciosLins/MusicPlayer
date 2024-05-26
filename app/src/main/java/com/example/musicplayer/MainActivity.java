@@ -24,6 +24,7 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 
 import com.example.musicplayer.Adapters.AlbumsRecyclerAdapter;
+import com.example.musicplayer.Adapters.VP2MainAdapter;
 import com.example.musicplayer.Secondaries.Music;
 import com.example.musicplayer.databinding.ActivityMainBinding;
 import com.google.android.material.carousel.CarouselLayoutManager;
@@ -32,13 +33,13 @@ import com.google.android.material.carousel.HeroCarouselStrategy;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import com.example.musicplayer.Secondaries.Extractor;
 public class MainActivity extends AppCompatActivity {
 ActivityMainBinding binding;
 private final int RequestPermissionCode = 1;
-private ArrayList<Music> audiosList;
-private ExoPlayer player;
+
     @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,40 +53,22 @@ private ExoPlayer player;
             Toast.makeText(this, "Sem permissão para acessar armazenamento", Toast.LENGTH_SHORT).show();
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},RequestPermissionCode);
         }
-        audiosList = new Extractor(getApplicationContext()).getAudios(false);
+        binding.ViewPager2.setUserInputEnabled(false);
 
-        List<MediaItem> list = new ArrayList<>();
-        for (Music a : audiosList){
-            list.add(MediaItem.fromUri(Uri.parse(a.getData())));
-        }
+        binding.ViewPager2.setAdapter(
+                new VP2MainAdapter(this,
+                        new ArrayList<>(Arrays.asList(
+                                new MusicsListFragment(),
+                                new MusicsListFragment(),
+                                new MusicsListFragment()))));
 
-        player = new ExoPlayer.Builder(this).build();
-
-        player.setMediaItems(list,true);
-
-        CarouselSnapHelper carouselSnapHelper = new CarouselSnapHelper();
-        carouselSnapHelper.attachToRecyclerView(binding.Recycler);
-
-        binding.Recycler.setLayoutManager(new CarouselLayoutManager
-                (new HeroCarouselStrategy(),CarouselLayoutManager.HORIZONTAL));
-        binding.Recycler.setAdapter(
-                new AlbumsRecyclerAdapter(this,
-                        new Extractor(this).catchAlbumArt(audiosList, false)));
-
-        player.addListener(new Player.Listener() {
-            @Override
-            public void onEvents(Player player, Player.Events events) {
-                if (events.containsAny(
-                        Player.EVENT_PLAY_WHEN_READY_CHANGED,
-                        Player.EVENT_PLAYBACK_STATE_CHANGED,
-                        Player.EVENT_PLAYBACK_SUPPRESSION_REASON_CHANGED,
-                        Player.EVENT_IS_PLAYING_CHANGED)) {
-                    Toast.makeText(MainActivity.this, "Evento aconteceu", Toast.LENGTH_SHORT).show();
-                }
-                if (events.containsAny(Player.EVENT_REPEAT_MODE_CHANGED)) {
-                    Toast.makeText(MainActivity.this, "Repeat", Toast.LENGTH_SHORT).show();
-                }
+        binding.BottomNavView.setOnItemSelectedListener(menuItem -> {
+            switch (menuItem.getTitle().charAt(0)){
+                case 'M': binding.ViewPager2.setCurrentItem(0); break;
+                case 'P': binding.ViewPager2.setCurrentItem(1); break;
+                case 'F': binding.ViewPager2.setCurrentItem(2); break;
             }
+            return true;
         });
     }
 
