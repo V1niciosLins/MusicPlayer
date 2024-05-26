@@ -2,7 +2,10 @@ package com.example.musicplayer.Secondaries;
 
 import android.graphics.Bitmap;
 
-public class Music {
+import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
+
+public class Music implements Serializable {
     private String Title, Artista, Album, Data;
     private Bitmap bitmap;
     private long duration;
@@ -58,6 +61,10 @@ public class Music {
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+
     }
 
     public long getDuration() {

@@ -1,6 +1,7 @@
 package com.example.musicplayer.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicplayer.PlayerActivity;
 import com.example.musicplayer.R;
 import com.example.musicplayer.Secondaries.Music;
 
@@ -47,6 +50,11 @@ public class MusicsRecyclerAdapter extends RecyclerView.Adapter<MusicsRecyclerAd
         holder.musicName.setText(list.get(position).getTitle());
         holder.albumName.setText(list.get(position).getAlbum());
         holder.duration.setText(longToMinutes(list.get(position).getDuration()));
+
+        holder.container.setOnClickListener(click->{
+            context.startActivity(new Intent(context.getApplicationContext(), PlayerActivity.class)
+                    .putExtra("index",position));
+        });
     }
 
     String longToMinutes(long value){
@@ -62,12 +70,14 @@ public class MusicsRecyclerAdapter extends RecyclerView.Adapter<MusicsRecyclerAd
     public static class vh extends RecyclerView.ViewHolder{
         ImageView img;
         TextView musicName, albumName, duration;
+        CardView container;
         public vh(@NonNull View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.MusicAlbum);
             musicName = itemView.findViewById(R.id.MusicName);
             albumName = itemView.findViewById(R.id.AlbumName);
             duration = itemView.findViewById(R.id.duration);
+            container = itemView.findViewById(R.id.musicContainer);
         }
     }
 }

@@ -22,11 +22,15 @@ import com.google.android.material.carousel.CarouselSnapHelper;
 import com.google.android.material.carousel.HeroCarouselStrategy;
 import com.google.android.material.color.ThemeUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 public class MusicsListFragment extends Fragment {
 FragmentMusicsListBinding binding;
-    private ArrayList<Music> audiosList;
+    public static ArrayList<Music> audiosList;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,6 +59,7 @@ FragmentMusicsListBinding binding;
                 new MusicsRecyclerAdapter(
                         getContext(),audiosList
                 ));
+
         return binding.getRoot();
     }
 }

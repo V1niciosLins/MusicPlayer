@@ -69,7 +69,7 @@ public class Extractor {
                     if (albumArt!=null){
                         try {
                             bm =context.getContentResolver().
-                                    loadThumbnail(albumArt, new Size(350,350),null);
+                                    loadThumbnail(albumArt, new Size(500,500),null);
                         } catch (IOException e) {
                             bm = null;
                             Log.e("ERRO NA THUMB", "ERRO em:"+ index);
