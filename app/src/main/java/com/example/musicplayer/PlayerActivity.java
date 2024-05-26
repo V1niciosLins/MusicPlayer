@@ -40,5 +40,7 @@ ActivityPlayerBinding binding;
         binding.albumCover.setImageBitmap(audiosList.get(index).getBitmap());
         binding.artistName.setText(audiosList.get(index).getArtista());
         binding.songName.setText(audiosList.get(index).getTitle());
+
+
     }
 }
