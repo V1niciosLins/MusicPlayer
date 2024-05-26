@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="8dp"
+    app:strokeWidth="0dp">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/c"
+            android:layout_margin="6dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            app:cardCornerRadius="8dp">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/MusicAlbum"
+                android:src="@drawable/ic_launcher_background"
+                android:scaleType="centerCrop"/>
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/MusicName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/c"
+            android:layout_toStartOf="@+id/divider"
+            android:layout_toEndOf="@id/c"
+            android:text="Music Name"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="15sp" />
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Album Name"
+            android:layout_toStartOf="@id/divider"
+            android:textSize="13sp"
+            android:id="@+id/AlbumName"
+            android:layout_toEndOf="@id/c"
+            android:layout_below="@id/MusicName"/>
+
+        <TextView
+            android:layout_margin="6dp"
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="01:48"
+            android:textSize="17sp" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="2dp"
+            android:layout_height="36dp"
+            android:background="?android:attr/listDivider"
+            android:layout_toStartOf="@id/duration"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -4,8 +4,8 @@
         android:icon="@drawable/music_note"/>
 
     <item android:title="Playlists" android:id="@+id/playlists"
-        android:icon="@drawable/music_note"/>
+        android:icon="@drawable/playlist"/>
 
     <item android:title="Favorites" android:id="@+id/favorites"
-        android:icon="@drawable/music_note"/>
+        android:icon="@drawable/star"/>
 </menu>
