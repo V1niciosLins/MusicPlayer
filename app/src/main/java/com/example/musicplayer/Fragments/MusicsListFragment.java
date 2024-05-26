@@ -1,14 +1,16 @@
-package com.example.musicplayer;
+package com.example.musicplayer.Fragments;
 
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.musicplayer.Adapters.AlbumsRecyclerAdapter;
+import com.example.musicplayer.Adapters.MusicsRecyclerAdapter;
 import com.example.musicplayer.Secondaries.Extractor;
 import com.example.musicplayer.Secondaries.Music;
 import com.example.musicplayer.databinding.FragmentMusicsListBinding;
@@ -37,6 +39,12 @@ FragmentMusicsListBinding binding;
         binding.Recycler.setAdapter(
                 new AlbumsRecyclerAdapter(getContext(),
                         new Extractor(getContext()).catchAlbumArt(audiosList, false)));
+
+        binding.MusicsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.MusicsRecycler.setAdapter(
+                new MusicsRecyclerAdapter(
+                        getContext(),audiosList
+                ));
         return binding.getRoot();
     }
 }

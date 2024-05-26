@@ -1,41 +1,23 @@
 package com.example.musicplayer;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.ContentUris;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.util.Size;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.media3.common.MediaItem;
-import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
-import androidx.media3.exoplayer.ExoPlayer;
 
-import com.example.musicplayer.Adapters.AlbumsRecyclerAdapter;
 import com.example.musicplayer.Adapters.VP2MainAdapter;
-import com.example.musicplayer.Secondaries.Music;
+import com.example.musicplayer.Fragments.MusicsListFragment;
 import com.example.musicplayer.databinding.ActivityMainBinding;
-import com.google.android.material.carousel.CarouselLayoutManager;
-import com.google.android.material.carousel.CarouselSnapHelper;
-import com.google.android.material.carousel.HeroCarouselStrategy;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import com.example.musicplayer.Secondaries.Extractor;
+
 public class MainActivity extends AppCompatActivity {
 ActivityMainBinding binding;
 private final int RequestPermissionCode = 1;

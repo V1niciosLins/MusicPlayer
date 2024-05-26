@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MusicsListFragment">
+    tools:context=".Fragments.MusicsListFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/s"
@@ -27,8 +27,27 @@
         android:layout_height="wrap_content"
         android:layout_margin="6dp"
         android:clipChildren="false"
-        android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@+id/s"
-        tools:layout_editor_absoluteX="6dp" />
+        android:clipToPadding="false"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Recycler"
+        android:text="Músicas"
+        android:textSize="24sp"
+        tools:ignore="HardCodedText"
+        android:layout_alignParentStart="true"
+        app:fontFamily="@font/inder_regular"
+        android:layout_margin="10dp"
+        android:id="@+id/s2"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@id/s2"
+        android:id="@+id/MusicsRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="6dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"/>
 
 </RelativeLayout>

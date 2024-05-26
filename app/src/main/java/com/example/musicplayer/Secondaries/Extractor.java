@@ -84,7 +84,8 @@ public class Extractor {
                             cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
                             cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)),
                             cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)),
-                            bm
+                            bm,
+                            cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
                     ));
                 }
                 index++;
